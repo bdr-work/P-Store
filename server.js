@@ -5,16 +5,26 @@ const morgan = require("morgan");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const compression = require("compression");
+const mongoose = require("mongoose");
 
 dotenv.config({ path: "config.env" });
 
-const databaseConnection = require("./database/config");
+// const databaseConnection = require("./database/config");
 const mountRoutes = require("./Routes");
 const ApiError = require("./Utils/apiError");
 const globalError = require("./Middleware/errorMiddleware");
 
 //Database Connection
-// databaseConnection();
+const databaseConnection = async () => {
+  try {
+    const conn = await mongoose.connect(process.env.DB_URI);
+    console.log(`MongoDB Connected: ${conn.connection.host}`);
+  } catch (error) {
+    console.log(error);
+    process.exit(1);
+  }
+};
+
 const app = express();
 //Middleware
 app.use(cors());
