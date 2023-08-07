@@ -4,7 +4,7 @@ const express = require("express");
 const morgan = require("morgan");
 const dotenv = require("dotenv");
 const cors = require("cors");
-const compression = require('compression')
+const compression = require("compression");
 
 dotenv.config({ path: "config.env" });
 
@@ -14,11 +14,11 @@ const ApiError = require("./Utils/apiError");
 const globalError = require("./Middleware/errorMiddleware");
 
 //Database Connection
-databaseConnection();
+// databaseConnection();
 const app = express();
 //Middleware
 app.use(cors());
-app.options("*", cors())
+app.options("*", cors());
 app.use(compression());
 app.use(express.json());
 //For Static Files Like Images
@@ -38,8 +38,10 @@ app.all("*", (req, res, next) => {
 //Global Error Middleware
 app.use(globalError);
 const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log("App run on port 3000");
+databaseConnection().then(() => {
+  app.listen(port, () => {
+    console.log("App run on port 3000");
+  });
 });
 //----------------------------------------------------------------------
 //Global error handler for rejection error مثل الاخطاء اللتي تجي من الداتابيس او اي شي خارج الاكسبرس
