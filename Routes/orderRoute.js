@@ -1,4 +1,4 @@
-const express = require("express");
+const express = require('express');
 
 const {
   createCashOrder,
@@ -9,20 +9,20 @@ const {
   updateOrderStatusPay,
   updateOrderStatusToDone,
   updateOrderStatusToUnderway,
-  checkoutSession,
+  checkoutSession
 } = require("../Services/OrderService");
 const Authorization = require("../Services/authService");
 
 const router = express.Router();
-router.use(Authorization.protect);
+// router.use(Authorization.protect);
 // .
 // .
 // .
 //----------------------------------------------------------------------
 //Routes
 router.get(
-  "/checkout-session/:cartId",
-  Authorization.allowedTo("user"),
+  "/checkout",
+  // Authorization.allowedTo("user"),
   checkoutSession
 );
 

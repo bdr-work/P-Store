@@ -4,7 +4,7 @@ const express = require("express");
 const morgan = require("morgan");
 const dotenv = require("dotenv");
 const cors = require("cors");
-const compression = require("compression");
+const compression = require('compression')
 const mongoose = require("mongoose");
 
 dotenv.config({ path: "config.env" });
@@ -16,7 +16,8 @@ const globalError = require("./Middleware/errorMiddleware");
 
 //Database Connection
 const databaseConnection = async () => {
-  try {
+
+ try {
     const conn = await mongoose.connect(process.env.DB_URI);
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
@@ -27,8 +28,9 @@ const databaseConnection = async () => {
 
 const app = express();
 //Middleware
+app.set('view engine', 'ejs');
 app.use(cors());
-app.options("*", cors());
+app.options("*", cors())
 app.use(compression());
 app.use(express.json());
 //For Static Files Like Images
@@ -48,11 +50,9 @@ app.all("*", (req, res, next) => {
 //Global Error Middleware
 app.use(globalError);
 const port = process.env.PORT || 3000;
-databaseConnection().then(() => {
-  app.listen(port, () => {
-    console.log("App run on port 3000");
-  });
-});
+databaseConnection().then(()=>{app.listen(port, () => {
+  console.log(`App run on port ${port}`);
+});})
 //----------------------------------------------------------------------
 //Global error handler for rejection error مثل الاخطاء اللتي تجي من الداتابيس او اي شي خارج الاكسبرس
 //بدل الكاتش !!!!!!!

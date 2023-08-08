@@ -1,5 +1,4 @@
-const sdk = require('api')('@tappayments/v1.0#1doiq1qllksuse4u');
-
+var moyasar = new (require('moyasar'))('sk_test_GtNtXntjZZDqv55cC9ewLDHuAw6WFNfjuf1NLoJg');
 const asyncHandler = require("express-async-handler");
 const ApiError = require("../Utils/apiError");
 
@@ -118,35 +117,17 @@ const shippingPrice = 0;
 const taxPrice = 0;
 
 //get Cart Dependent on cartid
-const cart = await Cart.findById(req.params.cartId);
-if(!cart){
- return next(new ApiError("Cart not found",404));
-}
+// const cart = await Cart.findById(req.params.cartId);
+// if(!cart){
+//  return next(new ApiError("Cart not found",404));
+// }
   //2- get the total price dependent on cart price ====> check coupon apply
-   const cartPrice = cart.totalCartPriceAfterDiscount ? cart.totalCartPriceAfterDiscount : cart.totalCartPrice;
-   const totalOrderPrice = cartPrice + taxPrice + shippingPrice;
+  //  const cartPrice = cart.totalCartPriceAfterDiscount ? cart.totalCartPriceAfterDiscount : cart.totalCartPrice;
+  //  const totalOrderPrice = cartPrice + taxPrice + shippingPrice;
    
    //Crete a session for checkout
-   sdk.auth('Bearer sk_test_qPG5dwf83kONBKzHgot9WjSh');
-   sdk.createACharge({
-      amount: totalOrderPrice,
-      currency: 'SAR',
-      customer_initiated: true,
-     threeDSecure: true,
-     save_card: false,
-     description: 'Test Description',
-     metadata: req.body.shippingAddress,
-     reference: {transaction: 'txn_01', order: 'ord_01'},
-     customer: {
-    first_name: 'test',
-    middle_name: 'test',
-    last_name: 'test',
-    email: 'test@test.com',
-    phone: {country_code: 966, number: 559765816}
-  },
-  source: {id: 'src_all'},
-  post: {url: 'http//localhost:3000/post_url'},
-  redirect: {url: 'http//localhost:3000/post_url'}
-   }).then(({ data }) => console.log(data))
-  .catch(err => console.error(err));
+  res.render('index',{title: 'Test'});
+  
+  
+    // res.status(200).json({ status: "success", res: response.data});
 });
