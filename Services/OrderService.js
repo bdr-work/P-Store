@@ -1,4 +1,3 @@
-var moyasar = new (require('moyasar'))('sk_test_GtNtXntjZZDqv55cC9ewLDHuAw6WFNfjuf1NLoJg');
 const asyncHandler = require("express-async-handler");
 const ApiError = require("../Utils/apiError");
 
@@ -10,28 +9,30 @@ const factory = require("./handlerFactory");
 //@desc Create Cash Order
 //@Route  Post /api/v1/orders/cartId
 //@access Private Just logged User
-exports.createCashOrder = asyncHandler(async(req,res,next)=>{
- //app Sittings
+exports.createCashOrder = asyncHandler(async (req, res, next) => {
+  //app Sittings
   const shippingPrice = 0;
   const taxPrice = 0;
-   //1 - get the cart dependent on cart id
-   
-   const cart = await Cart.findById(req.params.cartId);
-   if(!cart) {
+  //1 - get the cart dependent on cart id
+
+  const cart = await Cart.findById(req.params.cartId);
+  if (!cart) {
     return next(new ApiError("Cart not found", 404));
-   }
-    //2- get the total price dependent on cart price ====> check coupon apply
-   const cartPrice = cart.totalCartPriceAfterDiscount ? cart.totalCartPriceAfterDiscount : cart.totalCartPrice;
-   const totalOrderPrice = cartPrice + taxPrice + shippingPrice;
-    //3- create the order with default payment method "Cash"
-    const order = await Order.create({
-    user:req.user._id,
-    cartItems:cart.cartItems,
-    shippingAddress:req.body.shippingAddress,
-    totalOrderPrice
-     });
-       //4 - After created order : decrement product quantity , increment product sold
-     if (order) {
+  }
+  //2- get the total price dependent on cart price ====> check coupon apply
+  const cartPrice = cart.totalCartPriceAfterDiscount
+    ? cart.totalCartPriceAfterDiscount
+    : cart.totalCartPrice;
+  const totalOrderPrice = cartPrice + taxPrice + shippingPrice;
+  //3- create the order with default payment method "Cash"
+  const order = await Order.create({
+    user: req.user._id,
+    cartItems: cart.cartItems,
+    shippingAddress: req.body.shippingAddress,
+    totalOrderPrice,
+  });
+  //4 - After created order : decrement product quantity , increment product sold
+  if (order) {
     const bulkOption = cart.cartItems.map((item) => ({
       updateOne: {
         filter: { _id: item.product },
@@ -39,11 +40,11 @@ exports.createCashOrder = asyncHandler(async(req,res,next)=>{
       },
     }));
     await Product.bulkWrite(bulkOption, {});
- //5- clear Cart depend on cart Id
+    //5- clear Cart depend on cart Id
     await Cart.findByIdAndDelete(req.params.cartId);
-}
-res.status(201).json({ status: "success", data: order });
-})
+  }
+  res.status(201).json({ status: "success", data: order });
+});
 //@desc Get All Orders
 //@Route  Get /api/v1/orders
 //@access Private Admin-manager-User
@@ -78,7 +79,7 @@ exports.updateOrderStatusToDone = asyncHandler(async (req, res, next) => {
     return next(new ApiError("There is no Order with this Id", 404));
   }
   order.status = "Done";
-   await order.save();
+  await order.save();
   res.json({ status: "Success", data: order });
 });
 //@desc Update status of pay
@@ -91,7 +92,7 @@ exports.updateOrderStatusPay = asyncHandler(async (req, res, next) => {
   }
   order.isPaid = true;
   order.paidAt = Date.now();
-   await order.save();
+  await order.save();
   res.json({ status: "Success", data: order });
 });
 //@desc Update status of Delivery Order
@@ -112,22 +113,21 @@ exports.updateOrderStatusDeliver = asyncHandler(async (req, res, next) => {
 //@Route  Post /api/v1/orders/cartId
 //@access Private Just logged User
 
-exports.checkoutSession = asyncHandler(async(req,res,next)=>{
-const shippingPrice = 0;
-const taxPrice = 0;
+exports.checkoutSession = asyncHandler(async (req, res, next) => {
+  const shippingPrice = 0;
+  const taxPrice = 0;
 
-//get Cart Dependent on cartid
-// const cart = await Cart.findById(req.params.cartId);
-// if(!cart){
-//  return next(new ApiError("Cart not found",404));
-// }
+  //get Cart Dependent on cartid
+  // const cart = await Cart.findById(req.params.cartId);
+  // if(!cart){
+  //  return next(new ApiError("Cart not found",404));
+  // }
   //2- get the total price dependent on cart price ====> check coupon apply
   //  const cartPrice = cart.totalCartPriceAfterDiscount ? cart.totalCartPriceAfterDiscount : cart.totalCartPrice;
   //  const totalOrderPrice = cartPrice + taxPrice + shippingPrice;
-   
-   //Crete a session for checkout
-  res.render('index',{title: 'Test'});
-  
-  
-    // res.status(200).json({ status: "success", res: response.data});
+
+  //Crete a session for checkout
+  res.render("index", { title: "Test" });
+
+  // res.status(200).json({ status: "success", res: response.data});
 });
